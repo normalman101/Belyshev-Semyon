@@ -1,5 +1,6 @@
 --Enums begin
 CREATE TYPE payment_method AS ENUM ('pay_after_receiving', 'pay_after_buying');
+CREATE TYPE sex AS ENUM ('m', 'f');
 --Enums end
 
 
@@ -11,7 +12,7 @@ CREATE TABLE table_persons
     name         TEXT   NOT NULL CHECK ( name != '' ),
     surname      TEXT   NOT NULL CHECK ( surname != '' ),
     patronymic   TEXT   NOT NULL,
-    sex          TEXT   NOT NULL CHECK ( sex != 'm' or sex != 'f' ),
+    sex          sex    NOT NULL CHECK ( sex = 'm' or sex = 'f' ),
     phone_number TEXT   NOT NULL,
     email        TEXT   NOT NULL
 );
