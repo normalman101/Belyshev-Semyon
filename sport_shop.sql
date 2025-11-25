@@ -1,6 +1,5 @@
 --Enums begin
 CREATE TYPE payment_method AS ENUM ('pay_after_receiving', 'pay_after_buying');
-
 --Enums end
 
 
