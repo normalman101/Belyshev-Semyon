@@ -1,46 +1,59 @@
--- При именовании баз данных, таблиц, столбцов и других объектов необходимо придерживаться рекомендаций по именованию объектов в базах данных. Наименования объектов в заданиях даны только для объяснения поставленной задачи.
-
--- Создайте базу данных «Спортивный магазин». Эта база данных должна содержать информацию о товарах, продажах, сотрудниках, клиентах. Необходимо хранить следующую информацию:
-
--- О товарах: название товара, вид товара (одежда, обувь и т.д), количество товара в наличии, себестоимость, производитель, цена продажи
--- О продажах: название проданного товара, цена продажи, количество, дата продажи, информация о продавце (ФИО сотрудника, выполнившего продажу), информация о покупателе (ФИО покупателя, если купил зарегистрированный покупатель)
--- О сотрудниках: ФИО сотрудника, должность, дата приёма на работу, пол, зарплата
--- О клиентах: ФИО клиента, email, контактный телефон, пол, история заказов, процент скидки, подписан ли на почтовую рассылку.
+CREATE TABLE table_persons
+(
+    id           SERIAL NOT NULL PRIMARY KEY,
+    name         TEXT   NOT NULL CHECK ( name != '' ),
+    surname      TEXT   NOT NULL CHECK ( surname != '' ),
+    patronymic   TEXT   NOT NULL,
+    sex          TEXT   NOT NULL CHECK ( sex != 'm' or sex != 'f' ),
+    phone_number TEXT   NOT NULL,
+    email        TEXT   NOT NULL
+);
 
 CREATE TABLE table_clients
 (
-    id                  SERIAL  NOT NULL PRIMARY KEY,
-    client_name         TEXT    NOT NULL CHECK ( client_name != '' ),
-    client_surname      TEXT    NOT NULL CHECK ( client_name != '' ),
-    client_patronymic   TEXT,
-    client_email        TEXT,
-    client_phone_number TEXT    NOT NULL CHECK ( client_phone_number != '' ),
-    client_sex          TEXT    NOT NULL CHECK ( client_sex = 'm' or client_sex = 'f' ),
-    client_discount     REAL    NOT NULL,
-    agreed_on_mailing   BOOLEAN NOT NULL DEFAULT false
+    id                SERIAL        NOT NULL PRIMARY KEY,
+    person_id         INTEGER       NOT NULL,
+    discount          NUMERIC(4, 2) NOT NULL,
+    agreed_on_mailing BOOLEAN       NOT NULL DEFAULT false,
+    FOREIGN KEY (person_id) REFERENCES table_persons (id)
 );
 
 CREATE TABLE table_employees
 (
-    id                  SERIAL NOT NULL PRIMARY KEY,
-    employee_name       TEXT   NOT NULL CHECK ( employee_name != '' ),
-    employee_surname    TEXT   NOT NULL CHECK ( employee_surname != '' ),
-    employee_patronymic TEXT,
-    employee_position   TEXT   NOT NULL CHECK ( employee_position != '' ),
-    hire_date           DATE   NOT NULL,
-    employee_sex        TEXT   NOT NULL CHECK ( employee_sex = 'm' or employee_sex = 'f' ),
-    employee_salary     REAL   NOT NULL CHECK ( employee_salary > 0 )
+    id        SERIAL  NOT NULL PRIMARY KEY,
+    person_id INTEGER NOT NULL,
+    position  TEXT    NOT NULL CHECK ( position != '' ),
+    hire_date DATE    NOT NULL,
+    salary    money   NOT NULL CHECK ( salary > 0 ),
+    FOREIGN KEY (person_id) REFERENCES table_persons (id)
+);
+
+CREATE TABLE table_manufacturers
+(
+    id                  SERIAL  NOT NULL PRIMARY KEY,
+    name                TEXT    NOT NULL CHECK ( name != '' ),
+    address             TEXT    NOT NULL CHECK ( address != '' ),
+    phone_number        TEXT    NOT NULL CHECK ( phone_number != '' ),
+    website             TEXT    NOT NULL,
+    manufacture_country TEXT    NOT NULL CHECK ( manufacture_country != '' ),
+    brand               TEXT    NOT NULL CHECK ( brand != '' ),
+    license             INTEGER NOT NULL CHECK ( license != '' )
 );
 
 CREATE TABLE table_products
 (
-    id                     SERIAL  NOT NULL PRIMARY KEY,
-    product_name           TEXT    NOT NULL CHECK ( product_name != '' ),
-    product_type           TEXT    NOT NULL CHECK ( product_type != '' ),
-    product_quantity       INTEGER NOT NULL CHECK ( product_quantity >= 0 ),
-    product_price          REAL    NOT NULL CHECK ( product_price > 0 ),
-    product_manufacturer   TEXT    NOT NULL CHECK ( product_manufacturer != '' ),
-    product_purchase_price REAL GENERATED ALWAYS AS ( product_quantity * product_price ) STORED
+    id                                 SERIAL         NOT NULL PRIMARY KEY,
+    name                               TEXT           NOT NULL CHECK ( name != '' ),
+    type                               TEXT           NOT NULL CHECK ( type != '' ),
+    product_unit_type                  TEXT           NOT NULL CHECK ( product_unit_type != '' ),
+    unit                               NUMERIC(10, 2) NOT NULL CHECK ( unit > 0 ),
+    price                              money          NOT NULL CHECK ( price > 0 ),
+    manufacturer_id                    INTEGER        NOT NULL,
+    manufacture_date                   DATE           NOT NULL,
+    expiration_date_of_warranty_period DATE           NOT NULL CHECK ( expiration_date_of_warranty_period > manufacture_date ),
+    purchase_price                     money          NOT NULL CHECK ( purchase_price > table_products.price ),
+    warranty_period_in_days            INTEGER        NOT NULL CHECK ( warranty_period_in_days > 0 ),
+    FOREIGN KEY (manufacturer_id) REFERENCES table_manufacturers (id)
 );
 
 CREATE TABLE table_purchase_history
