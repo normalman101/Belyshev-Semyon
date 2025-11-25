@@ -83,9 +83,6 @@ CREATE TABLE table_products
     FOREIGN KEY (unit_id) REFERENCES table_units (id),
     FOREIGN KEY (manufacturer_id) REFERENCES table_manufacturers (id)
 );
-
-
-
 --Tables of product end
 
 
@@ -98,30 +95,31 @@ CREATE TABLE table_salespoint
 
 CREATE TABLE table_online_purchases
 (
-    id SERIAL NOT NULL PRIMARY KEY,
+    id                       SERIAL         NOT NULL PRIMARY KEY,
     payment                  payment_method NOT NULL,
     product_delivery_address INTEGER        NOT NULL,
     FOREIGN KEY (product_delivery_address) REFERENCES table_salespoint (id)
 );
 
-CREATE TABLE table_offline_purchases (
-    id SERIAL NOT NULL PRIMARY KEY,
-    employee_id INTEGER NOT NULL,
+CREATE TABLE table_offline_purchases
+(
+    id            SERIAL  NOT NULL PRIMARY KEY,
+    employee_id   INTEGER NOT NULL,
     salespoint_id INTEGER,
-    FOREIGN KEY (employee_id) REFERENCES table_employees(id),
-    FOREIGN KEY (salespoint_id) REFERENCES table_salespoint(id)
+    FOREIGN KEY (employee_id) REFERENCES table_employees (id),
+    FOREIGN KEY (salespoint_id) REFERENCES table_salespoint (id)
 );
 
 CREATE TABLE table_purchases
 (
-    id            SERIAL  NOT NULL PRIMARY KEY,
-    online_purchase_id INTEGER CHECK ( online_purchase_id = 1 or online_purchase_id = 0 ) DEFAULT 0,
+    id                  SERIAL  NOT NULL PRIMARY KEY,
+    online_purchase_id  INTEGER CHECK ( online_purchase_id = 1 or online_purchase_id = 0 ) DEFAULT 0,
     offline_purchase_id INTEGER CHECK ( online_purchase_id = 1 or online_purchase_id = 0 ) DEFAULT 0,
-    client_id     INTEGER NOT NULL,
-    product_id    INTEGER NOT NULL,
-    purchase_date DATE    NOT NULL,
-    FOREIGN KEY (online_purchase_id) REFERENCES table_online_purchases(id),
-    FOREIGN KEY (offline_purchase_id) REFERENCES table_offline_purchases(id),
+    client_id           INTEGER NOT NULL,
+    product_id          INTEGER NOT NULL,
+    purchase_date       DATE    NOT NULL,
+    FOREIGN KEY (online_purchase_id) REFERENCES table_online_purchases (id),
+    FOREIGN KEY (offline_purchase_id) REFERENCES table_offline_purchases (id),
     FOREIGN KEY (client_id) REFERENCES table_clients (id),
     FOREIGN KEY (product_id) REFERENCES table_products (id)
 );
