@@ -33,3 +33,13 @@ VALUES (2, '+7 901 234-56-78'),
        (10, '+7 916 789-01-85'),
        (10, '+7 916 789-01-86'),
        (1, '+7 917 890-12-87');
+
+INSERT INTO table_discounts(name, value)
+VALUES ('Seasonal discount', 05.00),
+       ('New customer', 10.50),
+       ('Loyalty member', 15.25),
+       ('Black Friday', 20.00),
+       ('Student discount', 07.50),
+       ('Holiday sale', 12.00),
+       ('Referral bonus', 08.30),
+       ('Birthday offer', 09.99);
